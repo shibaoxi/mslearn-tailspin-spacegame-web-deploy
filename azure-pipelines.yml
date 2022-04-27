@@ -84,7 +84,8 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: website'
             inputs:
-              azureSubscription: 'Resource Manager - Tailspin - Space Game'
+              azureSubscription: 'test-azure'
+              appType: 'webAppLinux'
               appName: '$(WebAppNameDev)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
 
@@ -107,7 +108,8 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: website'
             inputs:
-              azureSubscription: 'Resource Manager - Tailspin - Space Game'
+              azureSubscription: 'test-azure'
+              appType: 'webAppLinux'
               appName: '$(WebAppNameTest)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
 
@@ -130,6 +132,19 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: website'
             inputs:
-              azureSubscription: 'Resource Manager - Tailspin - Space Game'
+              azureSubscription: 'test-azure'
+              deployToSlotOrASE: true
+              resourceGroupName: 'CICD-Test'
+              slotName: 'swap'
+              appType: 'webAppLinux'
               appName: '$(WebAppNameStaging)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
+          - task: AzureAppServiceManage@0
+            displayName: 'Swap deployment slots'
+            inputs:
+              azureSubscription: 'test-azure'
+              ResourceGroupName: 'CICD-Test'
+              WebAppName: '$(WebAppNameStaging)'
+              SourceSlot: 'swap'
+              TargetSlot: 'production'
+              Action: 'Swap Slots'
